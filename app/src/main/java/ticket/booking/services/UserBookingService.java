@@ -8,6 +8,7 @@ import ticket.booking.util.UserServiceUtil;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -82,6 +83,12 @@ public class UserBookingService {
     }
 
     public List<Train> getTrains(String source, String destination) {
-            return null;
+        try{
+            TrainService trainService = new TrainService();
+            trainService.searchTrain(source,destination);
+        }catch (IOException e){
+            return new ArrayList<>();
+        }
+
     }
 }

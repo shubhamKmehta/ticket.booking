@@ -10,10 +10,8 @@ import ticket.booking.util.UserServiceUtil;
 
 import javax.imageio.IIOException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-import java.util.UUID;
+import java.lang.module.FindException;
+import java.util.*;
 
 public class App {
 
@@ -80,6 +78,17 @@ public class App {
                     System.out.println("Type your destination station");
                     String destination = scanner.next();
                     List<Train> trains = userBookingService.getTrains(source,destination);
+                    for(Train train : trains){
+                        System.out.println(FindException +" Train id : "+train.getTrainId());
+                        for (Map.Entry<String,String> entry : train.getStationTimes().entrySet()){
+                            System.out.println("Station "+entry.getKey() +" time : "+entry.getValue());
+                        }
+                    }
+                    System.out.println("Select a train by typing 1,2,3...");
+                    trainSelectedBooking= trains.get(scanner.nextInt());
+                    break;
+                case 5:
+
 
 
             }
