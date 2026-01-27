@@ -15,23 +15,29 @@ import java.util.Scanner;
 
 
 public class UserBookingService {
-    private User user;
-    private List<User> userList;
     private ObjectMapper objectMapper = new ObjectMapper();
-    private static final String USERS_PATH ="app/src/main/java/ticket/booking/localDb/users.json";
+    private List<User> userList;
+    private User user;
+
+
+    private final static String USERS_PATH ="app/src/main/java/ticket/booking/localDb/users.json";
 
     public UserBookingService() throws IOException {
-        loadUsers();
+        this.userList=loadUsers();
     }
-    public UserBookingService(User user1) throws IOException {
-        this.user=user1;
-        loadUsers();
+    public UserBookingService(User user) throws IOException {
+        this.user=user;
+        this.userList=loadUsers();
     }
 
     public List<User> loadUsers() throws IOException {
         File users = new File(USERS_PATH);
+        if(!users.exists()){
+            return new ArrayList<>();
+        }
         return objectMapper.readValue(users,new TypeReference<List<User>>(){});
     }
+
     public Boolean loginUser(){
         Optional<User> foundUser = userList.stream().filter(user1 -> {
             return user1.getName().equals(user.getName()) && UserServiceUtil.checkPassword(user.getPassword(),user1.getHashedPassword());
@@ -45,7 +51,7 @@ public class UserBookingService {
             saveUserListToFile();
             return Boolean.TRUE;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            return Boolean.FALSE;
         }
     }
 
@@ -56,7 +62,17 @@ public class UserBookingService {
     }
 
     public void fetchBooking(){
-        user.printTickets();
+        Optional<User> userFetched = userList.stream().filter(user1 -> {
+            return user1.getName().equals(user.getName()) && UserServiceUtil.checkPassword(user.getPassword(), user1.getHashedPassword());
+        }).findFirst();
+        if(userFetched.isPresent()){
+            userFetched.get().printTickets();
+        }
+    }
+
+
+    public List<List<Integer>> fetchSeats(Train train){
+        return train.getSeats();
     }
 
     public Boolean cancelBooking(String ticketId){
@@ -85,10 +101,34 @@ public class UserBookingService {
     public List<Train> getTrains(String source, String destination) {
         try{
             TrainService trainService = new TrainService();
-            trainService.searchTrain(source,destination);
+            return trainService.searchTrains(source.toLowerCase(), destination.toLowerCase());
         }catch (IOException e){
             return new ArrayList<>();
         }
 
+    }
+
+
+
+    public boolean bookTrainSeat(Train train,int row,int seat){
+        try
+        {
+            TrainService trainService = new TrainService();
+            List<List<Integer>> seats = train.getSeats();
+            if(row >= 0 && row < seats.size() && seat >= 0 && seat < seats.get(row).size()){
+                if(seats.get(row).get(seat) == 0){
+                    seats.get(row).set(seat,1);
+                    train.setSeats(seats);
+                    trainService.addTrain(train);
+                    return  true;
+                }else{
+                    return false;
+                }
+            }else{
+                return false;
+            }
+        }catch (IOException e){
+            return Boolean.FALSE;
+        }
     }
 }

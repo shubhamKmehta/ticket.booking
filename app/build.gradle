@@ -25,6 +25,8 @@ dependencies {
     implementation "com.fasterxml.jackson.core:jackson-databind:2.20.1"
     // Source: https://mvnrepository.com/artifact/org.mindrot/jbcrypt
     implementation "org.mindrot:jbcrypt:0.4"
+    // Source: https://mvnrepository.com/artifact/org.projectlombok/lombok
+    implementation "org.projectlombok:lombok:1.18.42"
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
