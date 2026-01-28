@@ -39,10 +39,14 @@ public class UserBookingService {
     }
 
     public Boolean loginUser(){
-        Optional<User> foundUser = userList.stream().filter(user1 -> {
-            return user1.getName().equals(user.getName()) && UserServiceUtil.checkPassword(user.getPassword(),user1.getHashedPassword());
-        }).findFirst();
-        return foundUser.isPresent();
+        Optional<User> foundUser = userList.stream().filter(user1 ->
+            user1.getName().equals(user.getName()) && UserServiceUtil.checkPassword(user.getPassword(),user1.getHashedPassword())
+        ).findFirst();
+        if (foundUser.isPresent()){
+            this.user=foundUser.get();
+            return true;
+        }
+        return false;
     }
 
     public Boolean signUp(User user1){
@@ -54,7 +58,9 @@ public class UserBookingService {
             return Boolean.FALSE;
         }
     }
-
+    public boolean isUserLogin(){
+        return this.user != null;
+    }
     // yaha ho rha h serialization...user.json me users add ho rhe hain 0 or 1 ke byte form me
     private void saveUserListToFile() throws IOException {
         File usersFile=new File(USERS_PATH);
@@ -62,9 +68,14 @@ public class UserBookingService {
     }
 
     public void fetchBooking(){
+        if(user == null){
+            System.out.println("Please login first");
+            return;
+        }
         Optional<User> userFetched = userList.stream().filter(user1 -> {
             return user1.getName().equals(user.getName()) && UserServiceUtil.checkPassword(user.getPassword(), user1.getHashedPassword());
         }).findFirst();
+
         if(userFetched.isPresent()){
             userFetched.get().printTickets();
         }

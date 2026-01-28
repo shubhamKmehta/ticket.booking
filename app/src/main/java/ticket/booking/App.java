@@ -65,12 +65,21 @@ public class App {
 
                     try{
                         userBookingService = new UserBookingService(userToLogin);
+                        if(userBookingService.loginUser()){
+                            System.out.println("Login successful!");
+                        }else {
+                            System.out.println("Invalid username or password");
+                        }
                     } catch (IOException e) {
                         return;
                     }
                     break;
                 case 3:
                     System.out.println("Fetching your booking");
+                    if(!userBookingService.isUserLogin()){
+                        System.out.println("You need to login first!");
+                        break;
+                    }
                     userBookingService.fetchBooking();
                     break;
                 case 4:
@@ -124,6 +133,25 @@ public class App {
                     }else{
                         System.out.println("Sorry ! your ticket can't be booked");
                     }
+                    break;
+                case 6:
+                    System.out.println("Enter your train Id.:- ");
+                    String trainId = scanner.next();
+                    if(trainId == null){
+                        System.out.println("Please enter a valid train Id");
+                    }
+                    Boolean cancelled = userBookingService.cancelBooking(trainId);
+
+                    if(cancelled.equals(Boolean.TRUE)){
+                        System.out.println("Booking has been cancelled");
+                    }else {
+                        System.out.println("Cancellation failed. Please check the ticket ID.");
+                    }
+                    break;
+                case 7:
+                    System.out.println("Thank you for using our service.!Good Bye USER");
+                    scanner.close();
+                    System.exit(0);
                     break;
                 default:
                     break;
